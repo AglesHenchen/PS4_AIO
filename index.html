@@ -1,0 +1,162 @@
+<html manifest="cache.appcache">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>PS4 Jailbreak · Home</title>
+    <link rel="stylesheet" href="assets/index.css?v=10" />
+
+</head>
+
+<body>
+    <div id="main-container">
+        <div id="prompt" role="button" tabindex="0" aria-hidden="true">
+            <span>Press</span>
+            <img src="assets/crossButton.png" alt="X" id="cross-button">
+            <span id="prompt-action">to run anyway</span>
+        </div>
+
+        <pre id="console"></pre>
+    </div>
+
+<script>
+(function () {
+    var con = document.getElementById("console");
+    var prompt = document.getElementById("prompt");
+    var promptAction = document.getElementById("prompt-action");
+
+    function print(msg, cls) {
+        if (!msg) return;
+        var span = document.createElement("span");
+        if (cls) span.className = cls;
+        span.textContent = msg + "\n";
+        con.appendChild(span);
+    }
+
+    function showPrompt(actionText, cls) {
+        promptAction.textContent = actionText || "to continue";
+        prompt.className = cls || "warn";
+        prompt.setAttribute("aria-hidden", "false");
+        try { prompt.focus(); } catch (e) {}
+    }
+
+    function hidePrompt() {
+        prompt.className = "";
+        prompt.setAttribute("aria-hidden", "true");
+    }
+
+    var params = new URLSearchParams(location.search);
+
+    // Firmwares with measured kernel table — KEEP IN SYNC with ps4_offsets.js
+    var SUPPORTED = { 1302: 1, 1304: 1, 1350: 1, 1352: 1 };
+
+    var key = null, fwnum = null;
+    var m = /PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
+    if (m) {
+        var ms = parseInt(m[2], 16).toString(16);
+        if (ms.length < 2) ms = "0" + ms;
+        key = m[1] + "." + ms;
+        fwnum = parseInt(m[1], 10) * 100 + parseInt(ms, 10);
+    }
+
+    var supported = fwnum !== null && SUPPORTED[fwnum] === 1;
+
+    print("firmware: " + (key || "unknown"));
+    print("supported: " + (supported ? "yes" : "no"), supported ? "ok" : "bad");
+
+    var target = "jb.html" + location.search;
+
+    function go() {
+        hidePrompt();
+        print("loading exploit...", "warn");
+        location.replace(target);
+    }
+
+    function waitForTap(actionText, action, cls) {
+        var fired = false;
+        showPrompt(actionText, cls);
+
+        function cleanup() {
+            window.removeEventListener("click", fire);
+            window.removeEventListener("keydown", onKeyDown);
+        }
+
+        function fire() {
+            if (fired) return;
+            fired = true;
+            cleanup();
+            hidePrompt();
+            action();
+        }
+
+        function onKeyDown(e) {
+            var code = e.keyCode || e.which || 0;
+            // Enter/Space are kept as fallbacks; the PS4 X button normally
+            // activates the focused element as a click.
+            if (code === 13 || code === 32 || code === 88) fire();
+        }
+
+        window.addEventListener("click", fire);
+        window.addEventListener("keydown", onKeyDown);
+    }
+
+    if (!supported) {
+        print("UNSUPPORTED FIRMWARE", "bad");
+        print("supported: 13.02 / 13.04 / 13.50 / 13.52", "warn");
+        return;
+    }
+
+    var ac = window.applicationCache;
+    if (!ac || !document.documentElement.hasAttribute("manifest")) {
+        print("cache unavailable", "warn");
+        waitForTap("to run anyway", go, "warn");
+    } else if (!navigator.onLine) {
+        print("offline — ready", "ok");
+        waitForTap("to run anyway", go, "ok");
+    } else if (ac.status === ac.IDLE) {
+        print("cached — ready", "ok");
+        waitForTap("to run anyway", go, "ok");
+    } else if (ac.status === ac.UPDATEREADY) {
+        try { ac.swapCache(); } catch (e) {}
+        print("update downloaded", "ok");
+        waitForTap("to reload", function () { location.reload(); }, "warn");
+    } else {
+        print("checking cache...");
+
+        ac.addEventListener("downloading",
+            function () { print("caching for offline (first run)..."); }, false);
+
+        ac.addEventListener("progress", function (e) {
+            if (e && e.total)
+                print("caching " + Math.round((e.loaded / e.total) * 100) + "%");
+        }, false);
+
+        ac.addEventListener("cached", function () {
+            print("cached for offline use", "ok");
+            waitForTap("to run anyway", go, "ok");
+        }, false);
+
+        ac.addEventListener("updateready", function () {
+            try { ac.swapCache(); } catch (e) {}
+            print("update downloaded", "ok");
+            waitForTap("to reload", function () { location.reload(); }, "warn");
+        }, false);
+
+        ac.addEventListener("noupdate", function () {
+            print("cached — offline ready", "ok");
+            waitForTap("to run anyway", go, "ok");
+        }, false);
+
+        ac.addEventListener("error", function () {
+            print("cache unavailable", "bad");
+            waitForTap("to run anyway", go, "bad");
+        }, false);
+
+        ac.addEventListener("obsolete", function () {
+            print("cache obsolete", "bad");
+            waitForTap("to run", go, "bad");
+        }, false);
+    }
+})();
+</script>
+</body>
+</html>

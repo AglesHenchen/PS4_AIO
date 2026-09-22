@@ -1,0 +1,17 @@
+body {
+    background-color: #ffffff;
+    color: #111111;
+    font-size: 20px;
+    text-align: center;
+    margin: 0;
+    overflow: hidden;
+}
+.info {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    font-size: 22px;
+    font-family: monospace;
+    color: #111111;
+    transform: translate(-50%, -50%);
+}

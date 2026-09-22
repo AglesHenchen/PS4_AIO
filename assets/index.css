@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+    --color-bg: #05070a;
+    --color-initial: #52688f;
+    --color-ok: #00ff88;
+    --color-fail: #ff3333;
+    --color-warn: #e3b341;
+    --color-text: #e0e6ed;
+    --glass: blur(20px) saturate(180%);
+    --ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-bg);
+    font-family: 'Inter', sans-serif;
+    color: var(--color-text);
+    overflow: hidden;
+    perspective: 1000px;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(at 10% 20%, rgba(30, 58, 138, 0.15) 0px, transparent 50%),
+        radial-gradient(at 90% 80%, rgba(8, 145, 178, 0.15) 0px, transparent 50%);
+    opacity: 0.8;
+    z-index: -1;
+}
+
+#main-container {
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+    aspect-ratio: 1 / 1;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: var(--glass);
+    -webkit-backdrop-filter: var(--glass);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.4),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+#prompt {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 0 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    color: var(--color-text);
+    text-align: center;
+}
+
+#prompt[aria-hidden="false"] {
+    display: flex;
+}
+
+#prompt.bad {
+    color: var(--color-fail);
+    text-shadow: 0 0 15px rgba(255, 51, 51, 0.25);
+}
+
+#prompt.warn {
+    color: var(--color-warn);
+}
+
+#prompt.ok {
+    color: var(--color-ok);
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+}
+
+#cross-button {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 0 10px rgba(82, 104, 143, 0.35));
+}
+
+#console {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 32px;
+    margin: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.55;
+    text-align: center;
+    white-space: pre-wrap;
+    color: rgba(224, 230, 237, 0.55);
+}
+
+#console span {
+    display: block;
+}
+
+.ok {
+    color: var(--color-ok);
+}
+
+.bad {
+    color: var(--color-fail);
+}
+
+.warn {
+    color: var(--color-warn);
+}
