@@ -1,12 +1,12 @@
 CACHE MANIFEST
-# rev 20260921-new-style-page-1
+# rev 20260921-jb-indicator-padlock-swap
 
 CACHE:
 index.html
 jb.html
 
 assets/index.css?v=10
-assets/jb.css?v=10
+assets/jb.css?v=11
 
 assets/crossButton.png
 assets/padlock.png
