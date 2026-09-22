@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <title>PS4 Jailbreak · Home</title>
+    <title>PS4 Jailbreak</title>
     <link rel="stylesheet" href="assets/index.css?v=10" />
 
 </head>
@@ -30,6 +30,18 @@
         if (cls) span.className = cls;
         span.textContent = msg + "\n";
         con.appendChild(span);
+    }
+
+    // Cache progress uses a single line instead of appending one line per event.
+    var cacheStatusLine = null;
+    function setCacheStatus(msg, cls) {
+        if (!cacheStatusLine) {
+            cacheStatusLine = document.createElement("span");
+            cacheStatusLine.id = "cache-status";
+            con.appendChild(cacheStatusLine);
+        }
+        cacheStatusLine.className = cls || "";
+        cacheStatusLine.textContent = msg + "\n";
     }
 
     function showPrompt(actionText, cls) {
@@ -102,6 +114,14 @@
     if (!supported) {
         print("UNSUPPORTED FIRMWARE", "bad");
         print("supported: 13.02 / 13.04 / 13.50 / 13.52", "warn");
+
+        // Desktop/non-PS4 browsers have no PS4 firmware in the User-Agent.
+        // Keep known unsupported PS4 firmwares blocked, but allow desktop
+        // testing of the prompt/click flow. jb.html will still reject the
+        // browser because no PS4 offsets exist for it.
+        if (fwnum === null) {
+            waitForTap("to run anyway", go, "bad");
+        }
         return;
     }
 
@@ -120,19 +140,22 @@
         print("update downloaded", "ok");
         waitForTap("to reload", function () { location.reload(); }, "warn");
     } else {
-        print("checking cache...");
+        setCacheStatus("checking cache...");
 
         ac.addEventListener("downloading",
-            function () { print("caching for offline (first run)..."); }, false);
+            function () { setCacheStatus("caching for offline (first run)...", "warn"); }, false);
 
         ac.addEventListener("progress", function (e) {
-            if (e && e.total)
-                print("caching " + Math.round((e.loaded / e.total) * 100) + "%");
+            if (e && e.total) {
+                var pct = Math.round((e.loaded / e.total) * 100);
+                setCacheStatus("caching " + pct + "%", "warn");
+            }
         }, false);
 
         ac.addEventListener("cached", function () {
-            print("cached for offline use", "ok");
-            waitForTap("to run anyway", go, "ok");
+            setCacheStatus("cached for offline use", "ok");
+            // First cache install is complete: continue directly to jb.html.
+            go();
         }, false);
 
         ac.addEventListener("updateready", function () {
@@ -142,17 +165,17 @@
         }, false);
 
         ac.addEventListener("noupdate", function () {
-            print("cached — offline ready", "ok");
+            setCacheStatus("cached — offline ready", "ok");
             waitForTap("to run anyway", go, "ok");
         }, false);
 
         ac.addEventListener("error", function () {
-            print("cache unavailable", "bad");
+            setCacheStatus("cache unavailable", "bad");
             waitForTap("to run anyway", go, "bad");
         }, false);
 
         ac.addEventListener("obsolete", function () {
-            print("cache obsolete", "bad");
+            setCacheStatus("cache obsolete", "bad");
             waitForTap("to run", go, "bad");
         }, false);
     }
