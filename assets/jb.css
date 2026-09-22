@@ -173,6 +173,36 @@
       body.done .core { background-color: var(--color-ok); box-shadow: 0 0 25px var(--color-ok); }
       body.done #spin { opacity: 0; }
 
+      #done-msg {
+      position: absolute;
+      top: calc(50% + 130px);
+      left: 0;
+      right: 0;
+        
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+        
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-ok);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      }
+      
+      #done-msg img {
+          width: 24px;
+          height: 24px;
+          object-fit: contain;
+      }
+      
+      body.done #done-msg {
+          display: flex;
+      }
+
       body.fail .pulse { border-color: var(--color-fail); animation: none; }
       body.fail .core { background-color: var(--color-fail); box-shadow: 0 0 25px var(--color-fail); }
       body.fail #spin { opacity: 0; }

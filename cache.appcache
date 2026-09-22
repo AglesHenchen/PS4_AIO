@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# rev 20260921-jb-indicator-padlock-swap
+# rev 20260921-jb-done-psbutton
 
 CACHE:
 index.html
@@ -10,6 +10,7 @@ assets/jb.css?v=11
 
 assets/crossButton.png
 assets/padlock.png
+assets/psButton.png
 
 jb.js
 core.js
