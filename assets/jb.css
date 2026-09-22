@@ -74,18 +74,23 @@
       /*
        * During the jailbreak only the visual indicator is visible.
        * The padlock replaces it when the run finishes (success or failure).
+       * Both occupy the exact same 200x200 box and the exact same position.
        */
-      #brand {
+      #brand,
+      #visual-indicator {
           position: absolute;
           left: 50%;
           top: 50%;
-          transform: translate(-50%, -50%) translateY(25px);
-          margin: 0;
-
-          display: flex;
+          width: 120px;
+          height: 120px;
+          transform: translate(-50%, -50%);
           justify-content: center;
           align-items: center;
+      }
 
+      #brand {
+          display: flex;
+          margin: 0;
           opacity: 0;
           visibility: hidden;
           pointer-events: none;
@@ -93,9 +98,11 @@
       }
 
       #padlock {
-          width: 150px;
-          height: auto;
+          width: 200px;
+          height: 200px;
+          object-fit: contain;
           display: block;
+          margin: 0;
       }
 
       body.done #brand,
@@ -113,14 +120,7 @@
       }
 
       #visual-indicator {
-          position: relative;
-          width: 80px;
-          height: 80px;
           display: flex;
-          justify-content: center;
-          align-items: center;
-
-          transform: translateY(25px);
           opacity: 1;
           visibility: visible;
           transition: opacity 0.25s var(--ease);
@@ -159,8 +159,8 @@
 
       #spin {
         position: absolute;
-        width: 140%;
-        height: 140%;
+        width: 100%;
+        height: 100%;
         border: 3px solid transparent;
         border-top-color: var(--color-text);
         border-radius: 50%;
@@ -179,7 +179,7 @@
       
       #msg {
           position: absolute;
-          top: calc(50% + 90px);
+          top: calc(50% + 130px);
           left: 0;
           right: 0;
       
